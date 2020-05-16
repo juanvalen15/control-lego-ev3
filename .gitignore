@@ -1,7 +1,11 @@
 *.o
-*.tmw
+*.mat
 *.dmr
-*.mk
+*.tmw
 *.xml
+<<<<<<< HEAD
 *.dep
 *.mat
+=======
+*.mk
+>>>>>>> be4c82b9b7a00836fbd6df3802ca7780b9c5235e
