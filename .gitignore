@@ -3,3 +3,5 @@
 *.dmr
 *.mk
 *.xml
+*.dep
+*.mat
