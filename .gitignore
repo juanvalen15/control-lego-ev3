@@ -1,1 +1,6 @@
 *.o
+*.mat
+*.dmr
+*.tmw
+*.xml
+*.mk
