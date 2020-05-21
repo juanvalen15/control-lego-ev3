@@ -1,11 +1,51 @@
-*.o
 *.mat
 *.dmr
 *.tmw
 *.xml
-<<<<<<< HEAD
 *.dep
-*.mat
-=======
 *.mk
->>>>>>> be4c82b9b7a00836fbd6df3802ca7780b9c5235e
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.i*86
+*.x86_64
+*.hex
+
+# System image
+uImage
+
+# Build directories
+OBJ/
+
+# Debug files
+*.dSYM/
+
+# cfg
+cfg/cfg/cfg
+
+# Exceptions
+!libusblib.a
+
