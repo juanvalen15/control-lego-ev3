@@ -3,11 +3,18 @@
 #include "ev3api.h"
 #include "app.h"
 #include <stdlib.h>
+#include <stdio.h>
+
+// TODO: modify counters according to the
+#define INIT_WAIT 10 // time
+#define REF_COUNT 10 // time
+#define INIT_REF 20 // reference amplitude
 
 static int32_t fontw, fonth;
-static int motor_cnt = 0;
+static int left_motor_cnt = 0;
 static int power = 0;
-static int task_cnt = 0;
+static int ref = 0;
+static int loop = 0;
 
 /**
  * Define the connection ports of the sensors and motors.
@@ -45,26 +52,45 @@ void periodic_task_2(intptr_t unused) {
     draw_start_time(2);
     char buf[100];
 
-    // read motor counts
-    motor_cnt = ev3_motor_get_counts(left_motor);
-    sprintf(buf, "MOTOR_CNT: %d", motor_cnt);
-    ev3_lcd_draw_string(buf, 0, fonth * 7);
+    FILE * fp;
 
-    sprintf(buf, "TASK_CNT: %d", task_cnt);
-    ev3_lcd_draw_string(buf, 0, fonth * 8);
+    ref = -INIT_REF; // initial reference value
 
-    sprintf(buf, "POWER: %d", power);
-    ev3_lcd_draw_string(buf, 0, fonth * 9);
+    if (loop > INIT_WAIT){
 
-    ev3_motor_set_power(left_motor, power);
-    if(power > -100 && power < 100){
-      power++;
-      task_cnt++;
+      fp = fopen("test.txt", "w");
+
+      // sensing: read motor counts
+      left_motor_cnt = ev3_motor_get_counts(left_motor);
+      if (left_motor_cnt > 360 || left_motor_cnt < -360)
+        ev3_motor_reset_counts(left_motor);
+
+      sprintf(buf, "MOTOR_CNT: %d", left_motor_cnt);
+      ev3_lcd_draw_string(buf, 0, fonth * 7);
+
+      sprintf(buf, "POWER: %d", power);
+      ev3_lcd_draw_string(buf, 0, fonth * 8);
+
+      // reference
+      if(loop % REF_COUNT == 0){
+        if (ref>-20 && ref<20)
+          ref = ref + 5;
+        else
+          ref = INIT_REF;
       }
-    else{
-      power = 0;
-      task_cnt = 0;
-	}
+
+      fprintf (fp, "loop: %d, left_motor_cnt: %d, power: %d\n",loop,left_motor_cnt, power);  
+      /* close the file*/
+      fclose (fp);
+
+      power = ref;
+  }
+  else{
+    power = 0;
+  }
+
+  ev3_motor_set_power(left_motor, power); // set power
+  loop++;
 }
 
 
@@ -76,6 +102,7 @@ void main_task(intptr_t unused) {
     ev3_lcd_set_font(EV3_FONT_SMALL);
     ev3_font_get_size(EV3_FONT_SMALL, &fontw, &fonth);
     ev3_lcd_draw_string("  TASK ID  | START TIME", 0, fonth * 1);
+
 
     for (bool_t start_prd_tsk_2 = false;;) {
         ev3_lcd_fill_rect(0, fonth * 4, EV3_LCD_WIDTH, fonth, EV3_LCD_WHITE);
